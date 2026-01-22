@@ -1,3 +1,4 @@
+import '../../../../../core/core.dart';
 import '../../../domain/domain.dart';
 import '../../dto/dto.dart';
 
@@ -116,17 +117,17 @@ class PersonMapper {
 
       dobDate:
           DateTime.tryParse(map['dobDate']?.toString() ?? '') ?? DateTime(1970),
-      dobAge: _toInt(map['dobAge']),
+      dobAge: toInt(map['dobAge']),
 
       registeredDate:
           DateTime.tryParse(map['registeredDate']?.toString() ?? '') ??
           DateTime(1970),
-      registeredAge: _toInt(map['registeredAge']),
+      registeredAge: toInt(map['registeredAge']),
 
       idName: map['idName']?.toString() ?? '',
       idValue: map['idValue']?.toString() ?? '',
 
-      streetNumber: _toInt(map['streetNumber']),
+      streetNumber: toInt(map['streetNumber']),
       streetName: map['streetName']?.toString() ?? '',
 
       city: map['city']?.toString() ?? '',
@@ -144,12 +145,5 @@ class PersonMapper {
       pictureMedium: map['pictureMedium']?.toString() ?? '',
       pictureThumbnail: map['pictureThumbnail']?.toString() ?? '',
     );
-  }
-
-  static int _toInt(dynamic value) {
-    if (value == null) return 0;
-    if (value is int) return value;
-    if (value is double) return value.toInt();
-    return int.tryParse(value.toString()) ?? 0;
   }
 }
