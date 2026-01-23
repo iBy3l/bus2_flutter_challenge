@@ -6,8 +6,7 @@ import '../../dto/random/random_user_dto.dart';
 class PersonMapper {
   static PersonEntity toEntity(RandomUserDto dto) {
     return PersonEntity(
-      uuid: const Uuid()
-          .v4(), // Generate a UUID as API might not provide a consistent one for persistence key
+      uuid: const Uuid().v4(),
       gender: dto.gender,
       nat: dto.nat,
       title: dto.name.title,
