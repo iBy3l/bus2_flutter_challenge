@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../notifiers/home_notifier.dart';
+import '../widgets/shaking_card.dart';
 import 'person_detail_page.dart';
 import 'saved_people_page.dart';
 
@@ -33,7 +34,7 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Random Users'),
+        title: const Text('Usuários'),
         actions: [
           IconButton(
             icon: const Icon(Icons.storage),
@@ -45,40 +46,54 @@ class _HomePageState extends State<HomePage>
           ),
         ],
       ),
-      body: ListenableBuilder(
-        listenable: _notifier,
-        builder: (context, _) {
-          if (_notifier.isLoading && _notifier.people.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (_notifier.people.isEmpty) {
-            return const Center(child: Text('Aguardando usuários...'));
-          }
-
-          return ListView.separated(
-            itemCount: _notifier.people.length,
-            separatorBuilder: (_, __) => const Divider(),
-            itemBuilder: (context, index) {
-              final person = _notifier.people[index];
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: CachedNetworkImageProvider(
-                    person.pictureThumbnail,
-                  ),
-                ),
-                title: Text(person.fullName),
-                subtitle: Text(person.email),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => PersonDetailPage(person: person),
-                    ),
-                  );
-                },
-              );
+      body: Column(
+        children: [
+          ValueListenableBuilder<double>(
+            valueListenable: _notifier.timeProgress,
+            builder: (context, value, _) {
+              return LinearProgressIndicator(value: value);
             },
-          );
-        },
+          ),
+          Expanded(
+            child: ListenableBuilder(
+              listenable: _notifier,
+              builder: (context, _) {
+                return ListView.separated(
+                  itemCount:
+                      _notifier.people.length + (_notifier.isLoading ? 1 : 0),
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemBuilder: (context, index) {
+                    if (_notifier.isLoading && index == 0) {
+                      return const ShakingCard(); // Show shaking card at top
+                    }
+
+                    final adjustedIndex = _notifier.isLoading
+                        ? index - 1
+                        : index;
+                    final person = _notifier.people[adjustedIndex];
+
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: CachedNetworkImageProvider(
+                          person.pictureThumbnail,
+                        ),
+                      ),
+                      title: Text(person.fullName),
+                      subtitle: Text(person.email),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => PersonDetailPage(person: person),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

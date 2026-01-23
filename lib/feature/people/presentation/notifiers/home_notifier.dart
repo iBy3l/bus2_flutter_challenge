@@ -16,6 +16,7 @@ class HomeNotifier extends ChangeNotifier {
   Ticker? _ticker;
   final Duration _interval = const Duration(seconds: 5);
   Duration _lastTrigger = Duration.zero;
+  final ValueNotifier<double> timeProgress = ValueNotifier(1.0);
 
   HomeNotifier({required this.getRandomPerson, required this.savePerson});
 
@@ -27,8 +28,21 @@ class HomeNotifier extends ChangeNotifier {
   }
 
   void _onTick(Duration elapsed) {
-    if (elapsed - _lastTrigger >= _interval) {
+    if (_isLoading) {
       _lastTrigger = elapsed;
+      timeProgress.value = 1.0;
+      return;
+    }
+
+    final elapsedSinceLast = elapsed - _lastTrigger;
+
+    double progress =
+        1.0 - (elapsedSinceLast.inMilliseconds / _interval.inMilliseconds);
+    timeProgress.value = progress.clamp(0.0, 1.0);
+
+    if (elapsedSinceLast >= _interval) {
+      _lastTrigger = elapsed;
+      timeProgress.value = 0.0;
       fetchAndSavePerson();
     }
   }
@@ -46,6 +60,8 @@ class HomeNotifier extends ChangeNotifier {
       // Handle error
     } finally {
       _isLoading = false;
+      timeProgress.value = 1.0;
+
       notifyListeners();
     }
   }
