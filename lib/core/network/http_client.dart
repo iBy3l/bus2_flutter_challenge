@@ -26,7 +26,7 @@ class AppHttpClient {
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw ServerException(
           response.statusCode,
-          'Falha HTTP ${response.statusCode}: ${response.reasonPhrase ?? ''}',
+          'Falha HTTP ${response.statusCode}: ${response.reasonPhrase}',
           cause: body,
         );
       }
