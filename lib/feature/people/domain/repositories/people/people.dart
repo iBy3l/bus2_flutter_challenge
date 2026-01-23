@@ -1,1 +1,1 @@
-export 'people_remote_repository.dart';
+export 'people_repository.dart';
