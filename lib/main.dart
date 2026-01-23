@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
-void main() {
+import 'core/di/service_locator.dart' as di;
+import 'feature/people/presentation/pages/home_page.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await di.init();
   runApp(const MainApp());
 }
 
@@ -9,12 +14,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return MaterialApp(
+      title: 'Bus2 Flutter Challenge',
+      theme: ThemeData(useMaterial3: true, primarySwatch: Colors.green),
+      home: const HomePage(),
     );
   }
 }
